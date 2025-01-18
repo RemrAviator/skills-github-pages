@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfica de Resultados de Aviator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        canvas {
+            margin: auto;
+            display: block;
+        }
+        .button-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        button {
+            width: 70px;
+            height: 70px;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 15px rgba(255, 255, 255, 0.4);
+        }
+        button::before {
+            content: '';
+            position: absolute;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        #redBtn { 
+            background: linear-gradient(135deg, #ff6666, #ff0000);
+        }
+        #redBtn::before {
+            content: '↓';
+        }
+        #grayBtn { 
+            background: linear-gradient(135deg, #e6e6e6, #b3b3b3); 
+        }
+        #grayBtn::before {
+            content: '↓';
+        }
+        #blueBtn { 
+            background: linear-gradient(135deg, #80bfff, #3385ff); 
+        }
+        #blueBtn::before {
+            content: '↑';
+        }
+        #greenBtn { 
+            background: linear-gradient(135deg, #85e085, #33cc33); 
+        }
+        #greenBtn::before {
+            content: '↑';
+        }
+        #goldBtn { 
+            background: linear-gradient(135deg, #ffdb4d, #ffaa00); 
+        }
+        #goldBtn::before {
+            content: '↑';
+        }
+        #pinkBtn { 
+            background: linear-gradient(135deg, #ff99ff, #ff33ff); 
+        }
+        #pinkBtn::before {
+            content: '↑';
+        }
+        #undoBtn, #clearBtn {
+            width: auto;
+            height: auto;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #333;
+            color: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        #undoBtn:hover, #clearBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <h2>Gráfica de Resultados de Aviator</h2>
+    <canvas id="aviatorChart" width="600" height="400"></canvas>
+    <div class="button-container">
+        <button id="redBtn"></button>
+        <button id="grayBtn"></button>
+        <button id="blueBtn"></button>
+        <button id="greenBtn"></button>
+        <button id="goldBtn"></button>
+        <button id="pinkBtn"></button>
+    </div>
+    <div class="button-container">
+        <button id="undoBtn">Deshacer</button>
+        <button id="clearBtn">Borrar Todo</button>
+    </div>
+    <script>
+        const ctx = document.getElementById('aviatorChart').getContext('2d');
+        const aviatorChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Resultados',
+                    data: [],
+                    borderColor: 'rgba(135, 206, 250, 0.8)', 
+                    borderWidth: 2,
+                    pointBackgroundColor: [],
+                    pointBorderColor: [],
+                    pointRadius: 5,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 500 
+                },
+                scales: {
+                    x: { ticks: { display: false } },
+                    y: {
+                        ticks: {
+                            color: 'white',
+                            stepSize: 1,
+                            callback: value => Number.isInteger(value) ? value : ''
+                        }
+                    }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        const patterns = [
+            ['up', 'down', 'up', 'down'],
+            ['up', 'up', 'up', 'down', 'up', 'up', 'up', 'down'],
+            ['down', 'down', 'up', 'down', 'down'],
+            ['up', 'down', 'down', 'up', 'down', 'down'],
+            ['down', 'up', 'down', 'up', 'down'],
+            ['up', 'up', 'down', 'down'],
+            ['up', 'up', 'up', 'down', 'up'],
+            ['down', 'down', 'up', 'up', 'down'],
+            ['up', 'down', 'up', 'up', 'down'],
+            ['down', 'up', 'up', 'down', 'up'],
+            ['up', 'down', 'down', 'up', 'down', 'up', 'up', 'up'],
+            ['up', 'up', 'down', 'down', 'up', 'up'],
+            ['down', 'up', 'up', 'down', 'down'],
+            ['up', 'down', 'up', 'down', 'up'],
+            ['down', 'down', 'up', 'up', 'down', 'up'],
+            ['up', 'up', 'up', 'up', 'down'],
+            ['down', 'down', 'up', 'up', 'up'],
+            ['up', 'down', 'down', 'down', 'up'],
+            ['up', 'up', 'down', 'up', 'down'],
+            ['down', 'up', 'down', 'up', 'up']
+        ];
+
+        let userSequence = [];
+        let waitingForCompletion = false;
+
+        function showMessage() {
+            const messageContainer = document.createElement('div');
+            messageContainer.style.position = 'fixed';
+            messageContainer.style.bottom = '20px';
+            messageContainer.style.left = '50%';
+            messageContainer.style.transform = 'translateX(-50%)';
+            messageContainer.style.backgroundColor = '#ff0000';
+            messageContainer.style.color = 'white';
+            messageContainer.style.padding = '15px 30px';
+            messageContainer.style.borderRadius = '10px';
+            messageContainer.style.boxShadow = '0 4px 10px rgba(255, 0, 0, 0.5)';
+            messageContainer.style.fontSize = '18px';
+            messageContainer.style.fontWeight = 'bold';
+            messageContainer.style.textAlign = 'center';
+            messageContainer.style.zIndex = '1000';
+            messageContainer.style.transition = 'opacity 0.5s ease';
+            messageContainer.textContent = 'Entrada Confirmada 2.00x';
+            document.body.appendChild(messageContainer);
+            setTimeout(() => {
+                messageContainer.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(messageContainer), 500);
+            }, 2000);
+        }
+
+        function checkPattern() {
+            if (waitingForCompletion) return;
+
+            for (const pattern of patterns) {
+                if (userSequence.length >= pattern.length) {
+                    const recentPattern = userSequence.slice(-pattern.length);
+                    if (JSON.stringify(recentPattern) === JSON.stringify(pattern)) {
+                        showMessage();
+                        waitingForCompletion = true;
+                        setTimeout(() => { waitingForCompletion = false; }, 3000);
+                        break;
+                    }
+                }
+            }
+        }
+
+        function addPoint(direction, label, color) {
+            const data = aviatorChart.data.datasets[0].data;
+            const labels = aviatorChart.data.labels;
+            const colors = aviatorChart.data.datasets[0].pointBackgroundColor;
+
+            const lastValue = data.length > 0 ? data[data.length - 1] : 1;
+            const newValue = direction === 'up' ? lastValue + 1 : lastValue - 1;
+
+            if (data.length >= 25) {
+                data.shift();
+                labels.shift();
+                colors.shift();
+            }
+
+            labels.push(label);
+            data.push(newValue);
+            colors.push(color);
+
+            userSequence.push(direction);
+            if (userSequence.length > 10) userSequence.shift();
+
+            checkPattern();
+            aviatorChart.update();
+        }
+
+        document.getElementById('redBtn').addEventListener('click', () => addPoint('down', '1.0x - 1.49x', '#ff0000'));
+        document.getElementById('grayBtn').addEventListener('click', () => addPoint('down', '1.5x - 1.99x', '#b3b3b3'));
+        document.getElementById('blueBtn').addEventListener('click', () => addPoint('up', '2.0x - 2.99x', '#3385ff'));
+        document.getElementById('greenBtn').addEventListener('click', () => addPoint('up', '3.0x - 4.99x', '#33cc33'));
+        document.getElementById('goldBtn').addEventListener('click', () => addPoint('up', '5.0x - 9.99x', '#ffaa00'));
+        document.getElementById('pinkBtn').addEventListener('click', () => addPoint('up', '10.0x o más', '#ff33ff'));
+        document.getElementById('undoBtn').addEventListener('click', () => {
+            const data = aviatorChart.data.datasets[0].data;
+            if (data.length > 0) {
+                data.pop();
+                aviatorChart.data.labels.pop();
+                aviatorChart.data.datasets[0].pointBackgroundColor.pop();
+                userSequence.pop();
+                aviatorChart.update();
+            }
+        });
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            aviatorChart.data.datasets[0].data = [];
+            aviatorChart.data.labels = [];
+            aviatorChart.data.datasets[0].pointBackgroundColor = [];
+            userSequence = [];
+            aviatorChart.update();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenidos al Graficador REMR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+        body {
+            background-color: #1e1e2f; /* Fondo negro mate */
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5em; /* Tamaño del título más grande */
+            margin: 0.5em 0;
+            color: #ff0000; /* Letras rojas brillantes */
+            background: linear-gradient(to right, #ff0000, #ff4d4d); /* Degradado rojo */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Sombra negra fina */
+            animation: pulsar 2s infinite alternate; /* Animación pulsante agradable */
+        }
+
+        @keyframes pulsar {
+            0% {
+                transform: scale(1);
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            }
+            100% {
+                transform: scale(1.05);
+                text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            }
+        }
+
+        p {
+            font-size: 1.2em;
+            max-width: 600px;
+            line-height: 1.6em;
+            margin: 0.5em auto 1.5em;
+            color: #dddddd;
+            text-shadow: 1px 1px 3px rgba(255,215,0,0.3); /* Sombra dorada sutil */
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.5);
+        }
+
+        .tutorial-button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #ffcc33, #ff6600);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .tutorial-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(255, 165, 0, 0.5);
+        }
+
+        /* Modal Style */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            text-align: left;
+            padding: 60px;
+        }
+
+        .modal-content {
+            background-color: #1e1e2f;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            text-align: justify;
+            font-size: 1.2em;
+        }
+
+        .close {
+            color: white;
+            position: absolute;
+            top: 20px;
+            right: 45px;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ff0000;
+        }
+
+        .highlighted {
+            color: #FFD700; /* Dorado brillante para la palabra resaltada */
+            font-size: 1.4em;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3); /* Sombra dorada en la palabra */
+        }
+    </style>
+</head>
+<body>
+    <h1>Bienvenidos al Graficador REMR</h1>
+    <p>La mejor herramienta para maximizar tus ganancias en Aviator. ¡Analiza tendencias, toma decisiones inteligentes y alcanza tus objetivos!</p>
+    <button onclick="window.location.href='graficador.html'">Iniciar</button>
+    <button class="tutorial-button" id="tutorialBtn">Tutorial</button>
+
+    <!-- Modal -->
+    <div id="tutorialModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Tutorial</h2>
+            <p>El Graficador REMR es una herramienta diseñada específicamente para ayudarte a maximizar tus ganancias en el juego Aviator. Con una interfaz amigable y funcionalidades avanzadas, te permite analizar tendencias, interpretar gráficos y tomar decisiones informadas con base en datos precisos.</p>
+            <p>Explora distintas estrategias para maximizar tus ganancias, desde las apuestas conservadoras hasta las más arriesgadas, adaptadas a tus necesidades y preferencias.</p>
+            <p><span class="highlighted">Utilización de los Botones</span>:</p>
+            <ul style="text-align: left; padding-left: 20px; color: #dddddd;">
+                <li><span style="color: red;">Rojo</span>: Coeficientes entre 1.0x y 1.49x.</li>
+                <li><span style="color: grey;">Gris</span>: Coeficientes entre 1.50x y 1.99x.</li>
+                <li><span style="color: blue;">Azul</span>: Coeficientes entre 2.00x y 2.99x.</li>
+                <li><span style="color: green;">Verde</span>: Coeficientes entre 3.00x y 4.99x.</li>
+                <li><span style="color: gold;">Dorado</span>: Coeficientes entre 5.00x y 9.99x.</li>
+                <li><span style="color: pink;">Rosado</span>: Coeficientes superiores a 10.00x.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        var modal = document.getElementById("tutorialModal");
+        var btn = document.getElementById("tutorialBtn");
+        var span = document.getElementById("closeModal");
+
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
